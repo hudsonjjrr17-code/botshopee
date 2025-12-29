@@ -13,7 +13,7 @@ export const AffiliatePanel: React.FC<AffiliatePanelProps> = ({ config, onSave }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({ ...formData, active: true });
-    alert("✅ Perfil atualizado!");
+    alert("✅ Perfil atualizado com sucesso!");
   };
 
   const providers: {id: ApiProvider, name: string, color: string, desc: string}[] = [
@@ -22,8 +22,14 @@ export const AffiliatePanel: React.FC<AffiliatePanelProps> = ({ config, onSave }
     { id: 'custom', name: 'Personalizado', color: 'bg-purple-600', desc: 'Sua própria URL' }
   ];
 
+  const getUrlPlaceholder = () => {
+    if (formData.apiProvider === 'z-api') return "https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-text";
+    if (formData.apiProvider === 'evolution') return "https://sua-api.com/message/sendText/sua_instancia";
+    return "URL completa do seu Webhook";
+  };
+
   return (
-    <div className="space-y-8 max-w-3xl mx-auto pb-12">
+    <div className="space-y-8 max-w-3xl mx-auto pb-24">
       <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-[2.5rem] p-8 shadow-2xl text-white">
         <h2 className="text-3xl font-black italic tracking-tighter mb-2 uppercase">Configurações</h2>
         <p className="text-orange-100 text-[10px] font-black uppercase tracking-widest opacity-80">
@@ -37,10 +43,10 @@ export const AffiliatePanel: React.FC<AffiliatePanelProps> = ({ config, onSave }
           <section className="space-y-6">
             <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-3">1. Identidade Afiliado</h4>
             <div>
-              <label className="block text-[11px] font-bold text-gray-400 mb-2 ml-1">Shopee Affiliate ID</label>
+              <label className="block text-[11px] font-bold text-gray-400 mb-2 ml-1">Shopee Affiliate ID (Opcional se usar links diretos)</label>
               <input 
                 type="text" 
-                className="w-full px-6 py-5 bg-black border border-gray-800 rounded-3xl focus:border-orange-500 outline-none transition-all text-white text-lg font-bold"
+                className="w-full px-6 py-5 bg-black border border-gray-800 rounded-3xl focus:border-orange-500 outline-none transition-all text-white text-lg font-bold shadow-inner"
                 value={formData.affiliateId}
                 onChange={e => setFormData({...formData, affiliateId: e.target.value})}
                 placeholder="Ex: 174829381"
@@ -49,7 +55,7 @@ export const AffiliatePanel: React.FC<AffiliatePanelProps> = ({ config, onSave }
           </section>
 
           <section className="space-y-6">
-            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-3">2. Escolha sua API de WhatsApp</h4>
+            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-3">2. Provedor de API</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {providers.map(p => (
                 <button
@@ -68,16 +74,54 @@ export const AffiliatePanel: React.FC<AffiliatePanelProps> = ({ config, onSave }
                 </button>
               ))}
             </div>
+          </section>
+
+          <section className="space-y-6 bg-black/40 p-8 rounded-[2.5rem] border border-gray-800/50">
+            <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4">3. Credenciais da Instância</h4>
             
-            <div className="bg-black/50 p-6 rounded-[2rem] border border-gray-800 space-y-4">
-               <p className="text-[10px] text-orange-400 font-black uppercase tracking-widest">Configuração do Provedor {formData.apiProvider.toUpperCase()}</p>
-               <p className="text-[11px] text-gray-500 italic">
-                 {formData.apiProvider === 'evolution' ? 'Use a Evolution API se você tem um servidor próprio ou usa serviços como o Evolution Bot.' : 'A Z-API é a mais estável para grandes volumes de disparo.'}
-               </p>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-400 mb-2 ml-1">URL da API (Endpoint de envio)</label>
+                <input 
+                  type="text" 
+                  className="w-full px-6 py-4 bg-black border border-gray-800 rounded-2xl focus:border-blue-500 outline-none transition-all text-white text-sm font-mono"
+                  value={formData.webhookUrl || ''}
+                  onChange={e => setFormData({...formData, webhookUrl: e.target.value})}
+                  placeholder={getUrlPlaceholder()}
+                />
+                <p className="mt-2 text-[9px] text-gray-600 italic">
+                  {formData.apiProvider === 'z-api' ? 'Cole a URL que termina em /send-text (ou /send-image para postar com fotos).' : 'A Evolution API usa endpoints como /message/sendText.'}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-400 mb-2 ml-1">
+                  {formData.apiProvider === 'evolution' ? 'API Key (apikey)' : 'Client Token'}
+                </label>
+                <input 
+                  type="password" 
+                  className="w-full px-6 py-4 bg-black border border-gray-800 rounded-2xl focus:border-blue-500 outline-none transition-all text-white text-sm font-mono"
+                  value={formData.clientToken || ''}
+                  onChange={e => setFormData({...formData, clientToken: e.target.value})}
+                  placeholder="Seu token secreto..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-400 mb-2 ml-1">ID do Grupo Padrão (JID) - Opcional aqui</label>
+                <input 
+                  type="text" 
+                  className="w-full px-6 py-4 bg-black border border-gray-800 rounded-2xl focus:border-blue-500 outline-none transition-all text-white text-sm font-mono"
+                  value={formData.webhookRecipient || ''}
+                  onChange={e => setFormData({...formData, webhookRecipient: e.target.value})}
+                  placeholder="120363... @g.us"
+                />
+                <p className="mt-2 text-[9px] text-gray-600 italic">Você também pode definir isso na aba ROBÔ usando o link de convite.</p>
+              </div>
             </div>
           </section>
 
-          <button type="submit" className="w-full bg-white hover:bg-orange-500 hover:text-white text-black font-black py-6 rounded-[2rem] transition-all shadow-xl uppercase tracking-widest text-sm active:scale-95">
+          <button type="submit" className="w-full bg-white hover:bg-[#EE4D2D] hover:text-white text-black font-black py-6 rounded-[2rem] transition-all shadow-xl uppercase tracking-widest text-sm active:scale-95">
             Salvar Configurações
           </button>
         </form>
