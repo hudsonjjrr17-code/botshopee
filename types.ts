@@ -12,6 +12,7 @@ export interface Product {
   description: string;
   trendMetric?: string;
   specifications?: Record<string, string>;
+  sources?: { uri: string; title: string }[];
 }
 
 export interface DealContent {

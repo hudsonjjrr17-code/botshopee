@@ -1,11 +1,12 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// Proteção para evitar "ReferenceError: process is not defined" na Vercel/Navegador
+// Garante que o objeto process.env exista para compatibilidade com bibliotecas legadas
+// Note: process.env.API_KEY será substituído pelo Vite durante o build
 if (typeof window !== 'undefined') {
   (window as any).process = (window as any).process || { env: {} };
+  (window as any).process.env = (window as any).process.env || {};
 }
 
 const rootElement = document.getElementById('root');

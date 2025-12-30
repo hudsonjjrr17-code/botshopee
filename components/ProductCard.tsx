@@ -56,6 +56,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect, isS
             🔥 Hot
           </div>
         </div>
+        
+        {/* Display grounding sources as required by Google Search tool guidelines */}
+        {product.sources && product.sources.length > 0 && (
+          <div className="mt-2 pt-2 border-t border-gray-100">
+            <p className="text-[7px] text-gray-400 font-bold uppercase mb-1">Verificado em:</p>
+            <div className="flex flex-wrap gap-1">
+              {product.sources.slice(0, 3).map((source, idx) => (
+                <a 
+                  key={idx} 
+                  href={source.uri} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[7px] text-blue-500 hover:underline truncate max-w-[70px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {source.title || 'Referência'}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
